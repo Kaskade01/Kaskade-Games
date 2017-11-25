@@ -1,0 +1,19 @@
+{
+  "name": "kaskade-games",
+  "version": "1.0.0",
+  "description": "Node-based e-commerce project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kaskade01/Kaskade-Games.git"
+  },
+  "author": "Kaskade",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kaskade01/Kaskade-Games/issues"
+  },
+  "homepage": "https://github.com/Kaskade01/Kaskade-Games#readme"
+}
