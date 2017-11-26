@@ -1,2 +1,14 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Project           : Kaskade Games E-commerce Project
+# Filename          : .gitignore
+# Author            : Kaskade
+# Date Created      : 20171125
+# Purpose           : Specify files to exclude from git repository.
+#
+# Revision History  :
+# Date      Author      Ref     Revision (Date in YYYYMMDD)
+# YYYYMMDD  [author]    [ref#]  [description]
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 # Local configuration file that should never be commited
 config.js
