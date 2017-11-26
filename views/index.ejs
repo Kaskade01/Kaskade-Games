@@ -1,0 +1,34 @@
+<% include partials/header %>
+    <div id="products_wrapper">
+        <form name="productform" method="POST" action="/cart">
+            <% products.forEach(function(product){ %>
+                <div style="width:1024px; display:table;">
+                    <div style="vertical-align:top;display:table-cell;float:right;width:100px;text-align:center;">
+                        <b>In stock</b><br>
+                        <%= product.inventory %>
+                    </div>
+                    <div style="width:125px;display:table-cell;vertical-align:middle;text-align:center;">
+                        <a href="#">
+                            <img src="/img/<%= product.imgurl %>" style="border:none;padding-right:10px;display:block;margin:auto;">
+                        </a>
+                    </div>
+                    <div style="width:475px;display: table-cell;vertical-align:top;">
+                            <a href="#"><h2><%= product.title %></h2></a>
+                            <span style="font-size:12pt;">
+                                <br>
+                                Description:
+                                <br>
+                                <%= product.description %>
+                            </span>
+                    </div>
+                    <div style="display:table-cell;float:left;width:100px;text-align:right;vertical-align:top;">
+                        <span style="font-size:xx-large;">$<%= product.price %></span>
+                        <br>
+                        <input type="submit" value="Add to cart">
+                    </div>
+                </div>
+                <hr>
+            <% }) %>
+        </form>
+    </div>
+<% include partials/footer %>

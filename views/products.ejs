@@ -1,0 +1,45 @@
+<% include partials/header %>
+<div id="products_wrapper">
+    <div class="errDiv">
+        <% if(errors != undefined){ %>
+            <ul>
+                <% errors.forEach(function(error){ %>
+                    <li style="color: red;"><%= error.msg %></li>
+                <% }) %>
+            </ul>
+        <% } %>
+    </div>
+    <div class="divTable productsTable">
+        <div class="divTableHeading">
+            <div class="divTableRow">
+                <div class="divTableHead">&nbsp;</div>
+                <div class="divTableHead">Product</div>
+                <div class="divTableHead">Inventory</div>
+                <div class="divTableHead">Price</div>
+                <div class="divTableHead">SKU</div>
+            </div>
+        </div>
+        <% products.forEach(function(product){ %>
+            <div class="divTableBody">
+                <div class="divTableRow">
+                    <div class="divTableCell"> <!-- thumbnail -->
+                        <img src="/img/<%= product.imgurl %>" style="width: 50px;">
+                    </div>
+                    <div class="divTableCell"> <!-- name -->
+                        <a href="/admin/products/?sku=<%= product.sku %>"><%= product.title %></a>
+                    </div>
+                    <div class="divTableCell"> <!-- inventory -->
+                        <%= product.inventory %>
+                    </div>
+                    <div class="divTableCell"> <!-- price -->
+                        $<%= product.price %>
+                    </div>
+                    <div class="divTableCell"> <!-- sku -->
+                        <%= product.sku %>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+<% include partials/footer %>

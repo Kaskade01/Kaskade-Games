@@ -1,0 +1,34 @@
+<% include partials/header %>
+<div id="editproducts_wrapper">
+    <div class="divTable productsTable">
+        <div class="divTableBody">
+            <div class="divTableRow"><!-- Product Image -->
+                    <div class="divTableHead">Product Image</div>
+                    <div class="divTableCell"><img src="/img/<%= product.imgurl %>" style="width: 50px;"></div>
+                    <div class="divTableCell">Edit</div>
+            </div>
+            <div class="divTableRow"><!-- Product Name -->
+                    <div class="divTableHead">Product Name</div>
+                    <div class="divTableCell"><%= product.title %></div>
+                    <div class="divTableCell">Edit</div>
+            </div>
+            <div class="divTableRow"><!-- Product Inventory -->
+                    <div class="divTableHead">Inventory</div>
+                    <div class="divTableCell"><%= product.inventory %></div>
+                    <div class="divTableCell">Edit</div>
+            </div>
+            <div class="divTableRow"><!-- Product Price -->
+                    <div class="divTableHead">Price</div>
+                    <div class="divTableCell"><%= product.price %></div>
+                    <div class="divTableCell">Edit</div>
+            </div>
+            <div class="divTableRow"><!-- Product SKU -->
+                    <div class="divTableHead">SKU</div>
+                    <div class="divTableCell"><%= product.sku %></div>
+                    <div class="divTableCell">Edit</div>
+            </div>
+        </div>
+    </div>
+    <button type="button" onclick="location.href='/admin/products'" >Back</button>
+</div>
+<% include partials/footer %>
