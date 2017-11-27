@@ -1,3 +1,101 @@
 <% include partials/header %>
-<!-- content goes here -->
+<section id="body_content">
+    <section id="content">
+        <div id="login_wrapper">
+            <div id="login_header">
+                Login
+            </div>
+            <div id="login_message"></div>
+            <div id="login_body">
+                <div id="returning_users">
+                    <form name="loginform" method="POST" action="/login">
+                        <div class="login_form_header">
+                            Returning Customer
+                        </div>
+                        <hr>
+                        <div class="error_div"></div>
+                        <div class="spacer"></div>
+                        <div class="form_wrapper">
+                            <div id="return_user_email_div">
+                                <label id="return_user_email_label" for="return_user_email_input">Email</label>
+                                <input id="return_user_email_input" type="text" name="username" >
+                            </div>
+                            <div class="spacer"></div>
+                            <div id="return_user_pass_div">
+                                <label id="return_user_pass_label" for="return_user_pass_input">Password</label>
+                                <input id="return_user_pass_input" name="password" type="password">
+                            </div>
+                            <div class="spacer"></div>
+                            <div>
+                                <a href="/password_reset">Forgot your password?</a>
+                            </div>
+                        </div>                            
+                        <div class="spacer"></div>
+                        <div id="return_user_button_div">
+                            <input type="submit" class="submitButton" style="width:150px;" value="LOGIN">
+                        </div>
+                        <div class="spacer"></div>
+                    </form>
+                </div>
+                <div id="new_users">
+                    <form name="registerForm" method="POST" action="/register">
+                        <div class="login_form_header">
+                            New Customer
+                        </div>
+                        <hr>
+                        <div class="error_div">
+                            <% if(errors != undefined){ %>
+                                <% errors.forEach(function(error){ %>
+                                    <div class="alert-danger"><%= error.msg %></div>
+                                <% }) %>
+                            <% } %>
+                            <% if(success_msg != undefined){ %>
+                                <div class="alert-success"><%= success_msg %></div>
+                            <% } %>  
+                            <% if(error_msg != undefined){ %>
+                                <div class="alert-danger"><%= error_msg %></div>
+                            <% } %>  
+                            <% if(error != undefined){ %>
+                                <div class="alert-danger"><%= error %></div>
+                            <% } %>                          
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="form_wrapper">
+                            <div id="register_user_email_div">
+                                <label id="register_user_email_label" for="register_user_email_input">Email</label>
+                                <input id="register_user_email_input" type="text" name="register_user_email" >
+                            </div>
+                            <div class="spacer"></div>
+                            <div id="register_user_pass_div">
+                                <label id="register_user_pass_label" for="register_user_pass_input">Password</label>
+                                <input id="register_user_pass_input" name="register_user_pass" type="password">
+                            </div>
+                            <div class="spacer"></div>
+                            <div id="confirm_user_pass_div">
+                                <label id="confirm_user_pass_label" for="confirm_user_pass_input">Confirm Password</label>
+                                <input id="confirm_user_pass_input" name="confirm_user_pass" type="password">
+                            </div>
+                        </div>                          
+                        <div class="spacer"></div>
+                        <div id="register_user_button_div">
+                            <input type="submit" class="submitButton" style="width:150px;" value="CREATE ACCOUNT">
+                        </div>
+                        <div class="spacer"></div>
+                    </form>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </section>
+    <section class="bottomContainer">
+        <div class="bottomPaypalInfo">
+            <p>Payments are made securely through PayPal. Purchase Protection covers all eligible purchases where PayPal is used. <a href="https://www.paypal.com/us/webapps/mpp/paypal-safety-and-security">Learn More</a></p>
+        </div>
+        <div class="bottomPaypal"><!-- PayPal Logo -->
+            <a href="https://www.paypal.com/webapps/mpp/paypal-popup" title="How PayPal Works" onclick="javascript:window.open('https://www.paypal.com/webapps/mpp/paypal-popup','WIPaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700'); return false;">
+                <img src="https://www.paypalobjects.com/webstatic/mktg/logo/AM_mc_vs_dc_ae.jpg" border="0" alt="PayPal Acceptance Mark">
+            </a>
+        </div>
+    </section>
+</section>
 <% include partials/footer %>

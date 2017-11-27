@@ -16,8 +16,13 @@
                         <li class="spacer"><a href="/about">About</a></li>
                         <li class="spacer"><a href="/faq">FAQ</a></li>
                         <li class="spacer"><a href="/contact">Contact</a></li>
+                        <% if(user === null){ %>
                         <li class="spacer"><a href="/login">Login</a></li> 
-                        <li class="spacer"><a href="/cart">Cart</a></li>                                               
+                        <% } %>
+                        <li class="spacer"><a href="/cart">Cart</a></li>
+                        <% if(user != null){ %>
+                        <li class="spacer"><a href="/logout">Logout</a></li>
+                        <% } %>                                             
                     </ul>
                 </nav>
             </div>
