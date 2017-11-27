@@ -1,3 +1,4 @@
+
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 // Project           : Kaskade Games E-commerce Project
 // Filename          : index.js
@@ -106,7 +107,7 @@ app.get('/login', function(request, response){              // LOGIN - - - - -
     });
 });
 
-app.get('/cart', function(request, response){         // CART - - - - -
+app.get('/cart', lock, function(request, response){         // CART - - - - -
     var cart = new Cart(request.session.cart ? request.session.cart : {});
     var id = request.query.sku;
     var errors = undefined;
@@ -145,6 +146,26 @@ app.get('/logout', function(request, response){              // LOGIN - - - - -
     request.logout();
     request.flash('success_msg', 'You are logged out');
     response.redirect('/login');
+});
+
+app.post('/edit-product', function(request, response){
+    var inv = request.body.inventory;
+    var pri = request.body.price;
+    var id = request.body.sku;
+    var data = {
+        "inventory": parseInt(inv),
+        "price": parseInt(pri)
+    }
+    console.log(inv);console.log(pri);console.log(id);
+    config.DB_PRODUCTS.findAndModify({
+        query: {sku: id},
+        update: {$set:data},
+    }, function(err, doc){
+        if(err) throw err;
+        console.log("UPDATE MADE:")
+        console.log(doc);
+        response.redirect('/admin/products');
+    })
 });
 
 app.post('/register', function(request, response){          // HANDLE REGISTRATION - - - - -
@@ -279,11 +300,36 @@ app.get('/success', function(request, response){
             console.log(error.response);
             throw error;
         } else {
-            console.log(JSON.stringify(payment));
+            console.log(payment);
             response.render('success',{
                 title: config.TITLE + " - Payment Successful",
                 msg: JSON.stringify(payment)
             })
+            var cart = new Cart(request.session.cart);
+            var cartProducts = cart.generateArray();
+            console.log("THESE WERE SOLD:")
+            console.log(cartProducts);
+            var data = [];
+            
+            cartProducts.forEach(function(product){
+                data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))})
+            })
+            console.log(data);
+            data.forEach(function(product){
+                var update = {
+                    "inventory": parseInt(product.inv),
+                }
+                var id = product.id;
+                config.DB_PRODUCTS.findAndModify({
+                    query: {sku: id},
+                    update: {$set:update},
+                }, function(err, doc){
+                    if(err) throw err;
+                    console.log("UPDATE MADE:")
+                    console.log(doc);
+                })
+            })
+
         }
     })
 });
@@ -301,7 +347,7 @@ app.get('/admin', lock, function(request, response){              // ADMIN - - -
     });
 });
 
-app.get('/admin/products', lock, function(request, response){             // ADMIN PRODUCTS - - - - -
+app.get('/admin/products', function(request, response){             // ADMIN PRODUCTS - - - - -
     var id = request.query.sku;                                     // save incoming sku query
     var errors = undefined;                                         // just in case
     if(id === undefined){                                           // show products page if there is no sku query
