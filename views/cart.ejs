@@ -1,3 +1,54 @@
 <% include partials/header %>
-
+<div id="products_wrapper">
+    <div class="errDiv">
+        <% if(errors != undefined){ %>
+            <ul>
+                <% errors.forEach(function(error){ %>
+                    <li style="color: red;"><%= error.msg %></li>
+                <% }) %>
+            </ul>
+        <% } %>
+    </div>
+    <div style="font-size: 40px; font-weight:bold; text-align:center;">Your Cart</div>
+    <div class="divTable productsTable">
+        <div class="divTableHeading">
+            <div class="divTableRow">
+                <div class="divTableHead">&nbsp;</div>
+                <div class="divTableHead">Product</div>
+                <div class="divTableHead">Qty.</div>
+                <div class="divTableHead">Price</div>
+                <div class="divTableHead">Total</div>
+            </div>
+        </div>
+        <% products.forEach(function(product){ %>
+            <div class="divTableBody">
+                <div class="divTableRow">
+                    <div class="divTableCell"> <!-- thumbnail -->
+                        <img src="/img/<%= product.item.imgurl %>" style="width: 50px;">
+                    </div>
+                    <div class="divTableCell"> <!-- product -->
+                        <%= product.item.title %>
+                    </div>
+                    <div class="divTableCell"> <!-- qty -->
+                        <input style="padding:0px;margin-bottom:0px;font-size:14px;text-align: center; " type="text" name="OrderQuan1" value="<%= product.qty %>" size="8">                        
+                    </div>
+                    <div class="divTableCell"> <!-- price -->
+                        $<%= product.item.price %>
+                    </div>
+                    <div class="divTableCell"> <!-- Total -->
+                        $<%= product.price %>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+    <div style="font-size: 20px; font-weight:bold; text-align:right; padding-right:10px; padding-top:10px;">
+        Cart Total:$<%= totalPrice %>
+    </div>
+    <div style="font-size: 20px; font-weight:bold; text-align:right; padding-right:10px;  padding-top:10px;">
+        <form action="/checkout" method="POST">
+            <input type="submit" value="Checkout">
+        </form>
+    </div>
+</div>
 <% include partials/footer %>

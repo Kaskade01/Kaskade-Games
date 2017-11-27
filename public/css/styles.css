@@ -414,13 +414,22 @@ FOOTER MEDIA QUERIES
 PRODUCT ELEMENTS
 ################
 */
-#products_wrapper, #editproducts_wrapper {
+#products_wrapper, #editproducts_wrapper, #checkout_wrapper{
     background-color: #fff;
     margin: 0 auto;
     width: 1024px;
     padding-top: 10px;
     padding-bottom: 10px;
     font-size: 12pt;
+}
+
+/*
+################
+CHECKOUT ELEMENTS
+################
+*/
+#checkout_wrapper{
+    text-align: right;
 }
 
 /*

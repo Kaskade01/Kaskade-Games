@@ -21,4 +21,18 @@ module.exports = function Cart(oldCart){
         }
         return arr;
     };
+
+    this.generateCheckout = function(){
+        var arr = [];
+        for(var id in this.items){
+            arr.push({
+                "name": this.items[id].item.title,
+                "sku": this.items[id].item.sku,
+                "price": this.items[id].item.price,
+                "currency": "USD",
+                "quantity": this.items[id].qty
+            })
+        }
+        return arr;
+    }
 };

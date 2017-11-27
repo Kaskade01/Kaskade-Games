@@ -32,6 +32,13 @@ var app = express();
 app.set('view engine', 'ejs');                              // ejs view engine
 app.set('views', path.join(__dirname, '/views'));           // ..
 
+// ========== PAYPAL SETUP ==========
+paypal.configure({
+    'mode': 'sandbox',
+    'client_id': config.PP_CLIENT,
+    'client_secret': config.PP_SECRET
+})
+
 // ========== MIDDLEWARE ==========
 app.use(bodyParser.json());                                 // body parser
 app.use(bodyParser.urlencoded({extended: false}));          // ..
@@ -104,8 +111,21 @@ app.get('/cart', function(request, response){         // CART - - - - -
     var id = request.query.sku;
     var errors = undefined;
     if(id === undefined){
-        response.render('cart', {
-            title: config.TITLE + " - Cart"
+        if(!request.session.cart){
+            return response.render('cart',{
+                title: config.TITLE + " - Cart",
+                products: [],
+                totalPrice: 0
+            })
+        }
+        var cart = new Cart(request.session.cart);
+        var cartProdcuts = cart.generateArray();
+        // var checkout = cart.generateCheckout();
+        //console.log(String(response.locals.user.email || ""))
+        response.render('cart',{
+            title: config.TITLE + " - Cart",
+            products: cartProdcuts, 
+            totalPrice: cart.totalPrice
         })
     } else {
         config.DB_PRODUCTS.findOne({sku:id}, function(err, product){
@@ -193,6 +213,86 @@ app.post('/login',
 passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
 function(request, response) {
     resposne.redirect('/');
+});
+
+// HANDLE CHECKOUT - - - - -
+app.post('/checkout', function(request, response){
+    var cart = new Cart(request.session.cart);
+    var cartProdcuts = cart.generateArray();
+    var checkoutItems = cart.generateCheckout();
+    var desc = "Thanks for shopping at Kaskade Games"
+    if(response.locals.user.email != null){
+        desc = "Order for " + String(response.locals.user.email)
+    }
+    var create_payment_json = {
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls": {
+            "return_url": config.PP_RETURN_URL,
+            "cancel_url": config.PP_CANCEL_URL
+        },
+        "transactions": [{
+            "item_list": {
+                "items": checkoutItems
+            },
+            "amount": {
+                "currency": "USD",
+                "total": cart.totalPrice
+            },
+            "description": desc
+        }]
+    };
+
+    paypal.payment.create(create_payment_json, function (error, payment) {
+        if (error) {
+            throw error;
+        } else {
+            console.log("Create Payment Response");
+            console.log(payment);
+            for(let i = 0; i < payment.links.length; i++){
+                if(payment.links[i].rel === 'approval_url'){
+                    response.redirect(payment.links[i].href)
+                }
+            }
+        }
+    });
+});
+
+app.get('/success', function(request, response){
+    var payerID = request.query.PayerID;
+    var paymentId = request.query.paymentId;
+    var cart = new Cart(request.session.cart);
+    var execute_payment_json = {
+        "payer_id": payerID,
+        "transactions": [{
+            "amount": {
+                "currency": "USD",
+                "total": cart.totalPrice
+            }
+        }]
+    }
+
+    paypal.payment.execute(paymentId, execute_payment_json, function(error, payment){
+        if(error){
+            console.log(error.response);
+            throw error;
+        } else {
+            console.log(JSON.stringify(payment));
+            response.render('success',{
+                title: config.TITLE + " - Payment Successful",
+                msg: JSON.stringify(payment)
+            })
+        }
+    })
+});
+
+app.get('/cancel', function(request, response){
+    response.render('cancel', {
+        title: config.TITLE + " - Payment Cancelled",
+        msg: "Your payment was cancelled. You will not be charged."
+    })
 });
 
 app.get('/admin', lock, function(request, response){              // ADMIN - - - - -
