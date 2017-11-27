@@ -1,6 +1,5 @@
 <% include partials/header %>
     <div id="products_wrapper">
-        <form name="productform" method="POST" action="/cart">
             <% products.forEach(function(product){ %>
                 <div style="width:1024px; display:table;">
                     <div style="vertical-align:top;display:table-cell;float:right;width:100px;text-align:center;">
@@ -24,11 +23,10 @@
                     <div style="display:table-cell;float:left;width:100px;text-align:right;vertical-align:top;">
                         <span style="font-size:xx-large;">$<%= product.price %></span>
                         <br>
-                        <input type="submit" value="Add to cart">
+                        <a href="/cart?sku=<%= product.sku %>" role="button">Add to cart</a>
                     </div>
                 </div>
                 <hr>
             <% }) %>
-        </form>
     </div>
 <% include partials/footer %>

@@ -19,11 +19,13 @@ var bodyParser          = require('body-parser'),
     LocalStrategy       = require('passport-local').Strategy,
     passport            = require('passport'),
     path                = require('path'),
+    paypal              = require('paypal-rest-sdk'),
     session             = require('express-session');
 
 // ========== LOCAL IMPORTS ==========
 var config              = require('./config.js'),           // contains private configuration settings
     User                = require('./functions');        // contains functions for passport and database
+    Cart                = require('./cart');
 
 // ========== EXPRESS SETUP ==========
 var app = express();
@@ -68,7 +70,7 @@ app.get('/', function(request, response){                   // HOME - - - - -
         response.render('index', {                          // render index.ejs
             title: config.TITLE + " - Store",               // pass title
             products: docs,                                 // pass products
-            user: request.user                              // ? ? ? ? ?
+            //user: request.user                              // ? ? ? ? ?
         });
     });
 });
@@ -98,9 +100,25 @@ app.get('/login', function(request, response){              // LOGIN - - - - -
 });
 
 app.get('/cart', function(request, response){         // CART - - - - -
-    response.render('cart', {                               // render cart.ejs
-        title: config.TITLE + " - Cart"                     // pass title
-    });
+    var cart = new Cart(request.session.cart ? request.session.cart : {});
+    var id = request.query.sku;
+    var errors = undefined;
+    if(id === undefined){
+        response.render('cart', {
+            title: config.TITLE + " - Cart"
+        })
+    } else {
+        config.DB_PRODUCTS.findOne({sku:id}, function(err, product){
+            if(err) {
+                console.log(err);
+                return response.redirect('/');
+            }
+            cart.add(product, product.sku);
+            request.session.cart = cart;
+            console.log(request.session.cart);
+            response.redirect('/cart');
+        })
+    }
 });
 
 app.get('/logout', function(request, response){              // LOGIN - - - - -
