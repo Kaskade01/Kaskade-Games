@@ -147,6 +147,36 @@ app.get('/logout', function(request, response){              // LOGIN - - - - -
     response.redirect('/login');
 });
 
+app.get('/store', function(request, response){       // STORE - - - - -
+    config.DB_PRODUCTS.find(function(err,docs){             // query products
+        response.render('store-sealed', {                   // render store-sealed.ejs
+            title: config.TITLE + " - Sealed Products",     // pass title
+            products: docs,                                 // pass products
+            //user: request.user                              // ? ? ? ? ?
+        });
+    });
+});
+
+app.get('/store/sealed', function(request, response){       // STORE (SEALED) - - - - -
+    config.DB_PRODUCTS.find(function(err,docs){             // query products
+        response.render('store-sealed', {                   // render store-sealed.ejs
+            title: config.TITLE + " - Sealed Products",     // pass title
+            products: docs,                                 // pass products
+            //user: request.user                              // ? ? ? ? ?
+        });
+    });
+});
+
+app.get('/store/singles', function(request, response){       // STORE (SINGLES) - - - - -
+    config.DB_PRODUCTS.find(function(err,docs){             // query products
+        response.render('store-sealed', {                   // render store-sealed.ejs
+            title: config.TITLE + " - Magic Singles",     // pass title
+            products: docs,                                 // pass products
+            //user: request.user                              // ? ? ? ? ?
+        });
+    });
+});
+
 app.post('/edit-product', function(request, response){
     var inv = request.body.inventory;
     var pri = request.body.price;
@@ -238,8 +268,8 @@ function(request, response) {
 // HANDLE CHECKOUT - - - - -
 app.post('/checkout', function(request, response){
     var cart = new Cart(request.session.cart);
-    var cartProdcuts = cart.generateArray();
-    var checkoutItems = cart.generateCheckout();
+    var cartProdcuts = cart.generateArray(); // THIS LOOKS USELESS
+    var checkoutItems = cart.generateCheckout(); // this creates the "ITEMS" array for PayPal
     var desc = "Thanks for shopping at Kaskade Games"
     if(response.locals.user.email != null){
         desc = "Order for " + String(response.locals.user.email)
@@ -300,34 +330,28 @@ app.get('/success', function(request, response){
             throw error;
         } else {
             console.log(payment);
-            response.render('success',{
-                title: config.TITLE + " - Payment Successful",
-                msg: JSON.stringify(payment)
-            })
+            response.render('success', { title: config.TITLE + " - Payment Successful", msg: JSON.stringify(payment)})
             var cart = new Cart(request.session.cart);
             var cartProducts = cart.generateArray();
             console.log("THESE WERE SOLD:")
             console.log(cartProducts);
             var data = [];
             
-            cartProducts.forEach(function(product){
-                data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))})
-            })
+            cartProducts.forEach(function(product){ data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))}) })
             console.log(data);
             data.forEach(function(product){
-                var update = {
-                    "inventory": parseInt(product.inv),
-                }
+                var update = {"inventory": parseInt(product.inv)};
                 var id = product.id;
-                config.DB_PRODUCTS.findAndModify({
-                    query: {sku: id},
-                    update: {$set:update},
-                }, function(err, doc){
+                config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
                     if(err) throw err;
-                    console.log("UPDATE MADE:")
-                    console.log(doc);
+                    console.log("UPDATE MADE...: " + product.id)
                 })
             })
+
+            // // FINALLY CLEAR EVERYTHING IN THE SESION CART
+            // console.log("CART BEFORE DEBUG: " + request.session.cart)
+            // request.session.cart = new Cart({}) 
+            // console.log("CART AFTER DEBUG: " + request.session.cart)
 
         }
     })
@@ -382,6 +406,10 @@ app.get('/admin/products', function(request, response){             // ADMIN PRO
             }
         });
     }
+});
+
+app.get('/bugs', function(request, response){                // BUG REPORT - - - - -
+    response.redirect("https://github.com/Kaskade01/Kaskade-Games/issues");
 });
 
 // ========== SERVER START ==========

@@ -35,4 +35,10 @@ module.exports = function Cart(oldCart){
         }
         return arr;
     }
+
+    this.killCart = function(){
+        this.items = {};
+        this.totalQty = 0;
+        this.totalPrice = 0;
+    }
 };
