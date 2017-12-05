@@ -21,6 +21,7 @@ var bodyParser          = require('body-parser'),
     path                = require('path'),
     paypal              = require('paypal-rest-sdk'),
     session             = require('express-session');
+    //sync                = require('sync');
 
 // ========== LOCAL IMPORTS ==========
 var config              = require('./config.js'),           // contains private configuration settings
@@ -112,6 +113,7 @@ app.get('/cart', lock, function(request, response){         // CART - - - - -
     // console.log('=========================', cart)
     var id = request.query.sku;
     var errors = undefined;
+    
     if(id === undefined){
         if(!request.session.cart){
             return response.render('cart',{
@@ -312,7 +314,46 @@ app.post('/checkout', function(request, response){
     });
 });
 
-app.get('/success', (req, res) => success(req, res))
+app.get("/success", (req, res) => success(req, res))
+// app.get('/success', (request, response) => {
+//     var payerID = request.query.PayerID;
+//     var paymentId = request.query.paymentId;
+//     var cart = new Cart(request.session.cart);
+//     var execute_payment_json = {
+//         "payer_id": payerID,
+//         "transactions": [{
+//             "amount": {
+//                 "currency": "USD",
+//                 "total": cart.totalPrice
+//             }
+//         }]
+//     }
+
+//     try {
+//         paypal.payment.execute(paymentID, execute_payment_json, (error, payment) => {
+//             if (error){
+//                 throw error;
+//             } else {
+//                 response.render('success', { title: config.TITLE + " - Payment Successful", msg: JSON.stringify(payment)})
+//                 var cart = new Cart(request.session.cart);
+//                 var cartProducts = cart.generateArray();
+//                 var data = [];
+
+//                 cartProducts.forEach(function(product){ data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))}) })
+//                 config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
+//                     if(err) throw err;
+//                     console.log("UPDATE MADE...: " + product.id)
+//                     request.session.cart = new Cart({})
+//                     console.log(request.session.cart)
+//                 })
+//             }
+//         })
+//     } catch (err) {
+//         response.render('cancel', {})
+//     }
+  
+
+// });
 
 app.get('/cancel', function(request, response){
     response.render('cancel', {
