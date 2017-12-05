@@ -9,7 +9,7 @@
 // Date      Author      Ref     Revision (Date in YYYYMMDD)
 // YYYYMMDD  [author]    [ref#]  [description]
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
+const { success } = require("./routes/success")
 // ========== NODE IMPORTS ==========
 var bodyParser          = require('body-parser'),
     cookieParser        = require('cookie-parser'),
@@ -107,7 +107,9 @@ app.get('/login', function(request, response){              // LOGIN - - - - -
 });
 
 app.get('/cart', lock, function(request, response){         // CART - - - - -
+  console.log(request.session.cart)
     var cart = new Cart(request.session.cart ? request.session.cart : {});
+    // console.log('=========================', cart)
     var id = request.query.sku;
     var errors = undefined;
     if(id === undefined){
@@ -135,7 +137,7 @@ app.get('/cart', lock, function(request, response){         // CART - - - - -
             }
             cart.add(product, product.sku);
             request.session.cart = cart;
-            console.log(request.session.cart);
+            // console.log(request.session.cart);
             response.redirect('/cart');
         })
     }
@@ -310,69 +312,7 @@ app.post('/checkout', function(request, response){
     });
 });
 
-app.get('/success', (request, response) => {
-    var payerID = request.query.PayerID;
-    var paymentId = request.query.paymentId;
-    var cart = new Cart(request.session.cart);
-    var execute_payment_json = {
-        "payer_id": payerID,
-        "transactions": [{
-            "amount": {
-                "currency": "USD",
-                "total": cart.totalPrice
-            }
-        }]
-    }
-
-    paypal.payment.execute(paymentId, execute_payment_json, (error, payment) => {
-        if(error){
-            // console.log(error.response);
-            throw error;
-        } else {
-            response.render('success', { title: config.TITLE + " - Payment Successful", msg: JSON.stringify(payment)})
-            var cart = new Cart(request.session.cart);
-            var cartProducts = cart.generateArray();
-            var data = [];
-
-            cartProducts.forEach(function(product){ data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))}) })
-            data.forEach(function(product){
-                var update = {"inventory": parseInt(product.inv)};
-                var id = product.id;
-                config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
-                    if(err) throw err;
-                    console.log("UPDATE MADE...: " + product.id)
-                    request.session.cart = new Cart({})
-                    console.log(request.session.cart)
-                })
-            })
-
-            // console.log(payment);
-            // response.render('success', { title: config.TITLE + " - Payment Successful", msg: JSON.stringify(payment)})
-            // var cart = new Cart(request.session.cart);
-            // var cartProducts = cart.generateArray();
-            // console.log("THESE WERE SOLD:")
-            // console.log(cartProducts);
-            // var data = [];
-            
-            // cartProducts.forEach(function(product){ data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))}) })
-            // console.log(data);
-            // data.forEach(function(product){
-            //     var update = {"inventory": parseInt(product.inv)};
-            //     var id = product.id;
-            //     config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
-            //         if(err) throw err;
-            //         console.log("UPDATE MADE...: " + product.id)
-            //     })
-            // })
-
-            // // FINALLY CLEAR EVERYTHING IN THE SESION CART
-            // console.log("CART BEFORE DEBUG: " + request.session.cart)
-            // request.session.cart = new Cart({}) 
-            // console.log("CART AFTER DEBUG: " + request.session.cart)
-
-        }
-    })
-});
+app.get('/success', (req, res) => success(req, res))
 
 app.get('/cancel', function(request, response){
     response.render('cancel', {
