@@ -300,8 +300,8 @@ app.post('/checkout', function(request, response){
         if (error) {
             throw error;
         } else {
-            console.log("Create Payment Response");
-            console.log(payment);
+            // console.log("Create Payment Response");
+            // console.log(payment);
             for(let i = 0; i < payment.links.length; i++){
                 if(payment.links[i].rel === 'approval_url'){
                     response.redirect(payment.links[i].href)
@@ -311,7 +311,7 @@ app.post('/checkout', function(request, response){
     });
 });
 
-app.get('/success', function(request, response){
+app.get('/success', (request, response) => {
     var payerID = request.query.PayerID;
     var paymentId = request.query.paymentId;
     var cart = new Cart(request.session.cart);
@@ -324,36 +324,69 @@ app.get('/success', function(request, response){
             }
         }]
     }
+<<<<<<< HEAD
     // console.log(request)
     // let self = this
     // console.log("2222")
     // console.log(self.request)
     paypal.payment.execute(paymentId, execute_payment_json, function(error, payment){
+=======
+
+    paypal.payment.execute(paymentId, execute_payment_json, (error, payment) => {
+>>>>>>> 0afb8397718d5e6e53c112eddd139ffc2df3457c
         if(error){
-            console.log(error.response);
+            // console.log(error.response);
             throw error;
         } else {
-            console.log(payment);
             response.render('success', { title: config.TITLE + " - Payment Successful", msg: JSON.stringify(payment)})
             var cart = new Cart(request.session.cart);
             var cartProducts = cart.generateArray();
-            console.log("THESE WERE SOLD:")
-            console.log(cartProducts);
             var data = [];
-            
+
             cartProducts.forEach(function(product){ data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))}) })
-            console.log(data);
             data.forEach(function(product){
                 var update = {"inventory": parseInt(product.inv)};
                 var id = product.id;
                 config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
                     if(err) throw err;
                     console.log("UPDATE MADE...: " + product.id)
+<<<<<<< HEAD
                     //console.log(self.request)
                     //self.request.session.cart = new Cart({}) // THIS SHOULD PROBABLY NOT BE HERE
                 })
             })
             console.log('done')
+=======
+                    request.session.cart = new Cart({})
+                    console.log(request.session.cart)
+                })
+            })
+
+            // console.log(payment);
+            // response.render('success', { title: config.TITLE + " - Payment Successful", msg: JSON.stringify(payment)})
+            // var cart = new Cart(request.session.cart);
+            // var cartProducts = cart.generateArray();
+            // console.log("THESE WERE SOLD:")
+            // console.log(cartProducts);
+            // var data = [];
+            
+            // cartProducts.forEach(function(product){ data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))}) })
+            // console.log(data);
+            // data.forEach(function(product){
+            //     var update = {"inventory": parseInt(product.inv)};
+            //     var id = product.id;
+            //     config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
+            //         if(err) throw err;
+            //         console.log("UPDATE MADE...: " + product.id)
+            //     })
+            // })
+
+            // // FINALLY CLEAR EVERYTHING IN THE SESION CART
+            // console.log("CART BEFORE DEBUG: " + request.session.cart)
+            // request.session.cart = new Cart({}) 
+            // console.log("CART AFTER DEBUG: " + request.session.cart)
+
+>>>>>>> 0afb8397718d5e6e53c112eddd139ffc2df3457c
         }
     })
 });
