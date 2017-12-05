@@ -324,16 +324,8 @@ app.get('/success', (request, response) => {
             }
         }]
     }
-<<<<<<< HEAD
-    // console.log(request)
-    // let self = this
-    // console.log("2222")
-    // console.log(self.request)
-    paypal.payment.execute(paymentId, execute_payment_json, function(error, payment){
-=======
 
     paypal.payment.execute(paymentId, execute_payment_json, (error, payment) => {
->>>>>>> 0afb8397718d5e6e53c112eddd139ffc2df3457c
         if(error){
             // console.log(error.response);
             throw error;
@@ -350,13 +342,6 @@ app.get('/success', (request, response) => {
                 config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
                     if(err) throw err;
                     console.log("UPDATE MADE...: " + product.id)
-<<<<<<< HEAD
-                    //console.log(self.request)
-                    //self.request.session.cart = new Cart({}) // THIS SHOULD PROBABLY NOT BE HERE
-                })
-            })
-            console.log('done')
-=======
                     request.session.cart = new Cart({})
                     console.log(request.session.cart)
                 })
@@ -386,7 +371,6 @@ app.get('/success', (request, response) => {
             // request.session.cart = new Cart({}) 
             // console.log("CART AFTER DEBUG: " + request.session.cart)
 
->>>>>>> 0afb8397718d5e6e53c112eddd139ffc2df3457c
         }
     })
 });
