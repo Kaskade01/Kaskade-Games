@@ -21,6 +21,7 @@ var bodyParser          = require('body-parser'),
     path                = require('path'),
     paypal              = require('paypal-rest-sdk'),
     session             = require('express-session');
+    //sync                = require('sync');
 
 // ========== LOCAL IMPORTS ==========
 var config              = require('./config.js'),           // contains private configuration settings
@@ -323,7 +324,10 @@ app.get('/success', function(request, response){
             }
         }]
     }
-
+    // console.log(request)
+    // let self = this
+    // console.log("2222")
+    // console.log(self.request)
     paypal.payment.execute(paymentId, execute_payment_json, function(error, payment){
         if(error){
             console.log(error.response);
@@ -345,14 +349,11 @@ app.get('/success', function(request, response){
                 config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
                     if(err) throw err;
                     console.log("UPDATE MADE...: " + product.id)
+                    //console.log(self.request)
+                    //self.request.session.cart = new Cart({}) // THIS SHOULD PROBABLY NOT BE HERE
                 })
             })
-
-            // // FINALLY CLEAR EVERYTHING IN THE SESION CART
-            // console.log("CART BEFORE DEBUG: " + request.session.cart)
-            // request.session.cart = new Cart({}) 
-            // console.log("CART AFTER DEBUG: " + request.session.cart)
-
+            console.log('done')
         }
     })
 });
