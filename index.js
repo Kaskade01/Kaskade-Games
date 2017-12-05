@@ -111,6 +111,7 @@ app.get('/cart', lock, function(request, response){         // CART - - - - -
     var cart = new Cart(request.session.cart ? request.session.cart : {});
     var id = request.query.sku;
     var errors = undefined;
+    
     if(id === undefined){
         if(!request.session.cart){
             return response.render('cart',{
@@ -325,54 +326,30 @@ app.get('/success', (request, response) => {
         }]
     }
 
-    paypal.payment.execute(paymentId, execute_payment_json, (error, payment) => {
-        if(error){
-            // console.log(error.response);
-            throw error;
-        } else {
-            response.render('success', { title: config.TITLE + " - Payment Successful", msg: JSON.stringify(payment)})
-            var cart = new Cart(request.session.cart);
-            var cartProducts = cart.generateArray();
-            var data = [];
+    try {
+        paypal.payment.execute(paymentID, execute_payment_json, (error, payment) => {
+            if (error){
+                throw error;
+            } else {
+                response.render('success', { title: config.TITLE + " - Payment Successful", msg: JSON.stringify(payment)})
+                var cart = new Cart(request.session.cart);
+                var cartProducts = cart.generateArray();
+                var data = [];
 
-            cartProducts.forEach(function(product){ data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))}) })
-            data.forEach(function(product){
-                var update = {"inventory": parseInt(product.inv)};
-                var id = product.id;
+                cartProducts.forEach(function(product){ data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))}) })
                 config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
                     if(err) throw err;
                     console.log("UPDATE MADE...: " + product.id)
                     request.session.cart = new Cart({})
                     console.log(request.session.cart)
                 })
-            })
+            }
+        })
+    } catch (err) {
+        response.render('cancel', {})
+    }
+  
 
-            // console.log(payment);
-            // response.render('success', { title: config.TITLE + " - Payment Successful", msg: JSON.stringify(payment)})
-            // var cart = new Cart(request.session.cart);
-            // var cartProducts = cart.generateArray();
-            // console.log("THESE WERE SOLD:")
-            // console.log(cartProducts);
-            // var data = [];
-            
-            // cartProducts.forEach(function(product){ data.push({id:product.item.sku, inv:(parseInt(product.item.inventory) - parseInt(product.qty))}) })
-            // console.log(data);
-            // data.forEach(function(product){
-            //     var update = {"inventory": parseInt(product.inv)};
-            //     var id = product.id;
-            //     config.DB_PRODUCTS.findAndModify( {query: {sku: id}, update: {$set:update}} , function(err, doc){
-            //         if(err) throw err;
-            //         console.log("UPDATE MADE...: " + product.id)
-            //     })
-            // })
-
-            // // FINALLY CLEAR EVERYTHING IN THE SESION CART
-            // console.log("CART BEFORE DEBUG: " + request.session.cart)
-            // request.session.cart = new Cart({}) 
-            // console.log("CART AFTER DEBUG: " + request.session.cart)
-
-        }
-    })
 });
 
 app.get('/cancel', function(request, response){
